@@ -8,6 +8,7 @@ myApp.pageCount = 0; // increments by 1 at the same time as displaycount increme
 myApp.jyipKey = '886387905641973'; // insert personal API key
 myApp.userLocation;
 
+myApp.newOffset = '';
 /* 0: Object
 city: "Toronto"
 company: "CaseWare"
@@ -75,7 +76,7 @@ myApp.searchListener = function(){
 
 	  		// myApp.resultsCount = 0; //reset the counter
 
-	  		myApp.getUserInput(myApp.displayCount);
+	  		myApp.getUserInput(myApp.displayCount,true);
 
   		} else {
   			console.log('poop');
@@ -86,7 +87,7 @@ myApp.searchListener = function(){
 
 // Create a method to .ajax call Indeed jobs
 
-myApp.getUserInput = function(startCnt){
+myApp.getUserInput = function(startCnt,clear){
 	$.ajax({
 	    url: 'http://proxy.hackeryou.com', // setup proxy url
 	    dataType: 'json',
@@ -145,10 +146,12 @@ myApp.getUserInput = function(startCnt){
 		// $('span.totalResults').text(myApp.ajaxResults.totalResults);
 
 		// Increment our global counter by 9 everytime we get results
+		if(clear === true) {
+			$('#results .container').empty();
+		}
 		myApp.displayCount += 9;
-
 		// start is always 1, end is our displayCount
-		myApp.showNumJobs(1, res.end, res.totalResults);
+		myApp.showNumJobs(1, res.end, res.totalget);
 		myApp.createResults(res.results);
 
 		if ($(".btnMore").length === 0) {
@@ -205,8 +208,13 @@ myApp.createResults = function(jobResults) {
 	//$('.container').empty();
 	$.each(allArticleObjects, function(index, value){
 		$('.container').append(value);
+		if(index === 0) {
+			myApp.newOffset = $(value).offset().top;
+		}
 		// myApp.counter();
 	});
+
+  	$(document.body).animate({scrollTop: myApp.newOffset - 60}, 800);
 
 }
 
@@ -215,7 +223,7 @@ myApp.loadMore = function(){
 	// 	e.preventDefault();
 		console.log("Loading More");
 
-		myApp.getUserInput(myApp.displayCount);
+		myApp.getUserInput(myApp.displayCount,false);
 	// });
 };
 
